@@ -1,0 +1,1780 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>CS2 2024 Top20选手风格特点分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --cs-primary: #f8b700;
+            --cs-secondary: #1e90ff;
+            --cs-accent: #ff4655;
+            --cs-dark: #1a1a2e;
+            --cs-darker: #16161d;
+            --cs-light: #e6e6fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cs-darker);
+            color: var(--cs-light);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(to right, #000000, #1a1a2e);
+            border-bottom: 3px solid var(--cs-primary);
+        }
+
+        .section-title {
+            border-left: 4px solid var(--cs-primary);
+        }
+
+        .dimension-card {
+            border-left: 3px solid var(--cs-secondary);
+            background-color: rgba(30, 144, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .dimension-card:hover {
+            background-color: rgba(30, 144, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .player-card {
+            border: 1px solid rgba(248, 183, 0, 0.2);
+            background: linear-gradient(to bottom right, rgba(26, 26, 46, 0.95), rgba(22, 22, 29, 0.95));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--cs-primary);
+        }
+
+        .player-image {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .player-card:hover .player-image {
+            border-color: var(--cs-accent);
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+            width: 300px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(248, 183, 0, 0.2);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--cs-accent);
+            color: var(--cs-accent);
+            font-weight: bold;
+        }
+
+        .tab:hover:not(.active) {
+            border-bottom: 3px solid var(--cs-secondary);
+            color: var(--cs-secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .select-wrapper {
+            position: relative;
+            background-color: var(--cs-dark);
+            border: 1px solid rgba(248, 183, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .badge {
+            background-color: var(--cs-primary);
+            color: var(--cs-darker);
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-weight: bold;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+
+        .badge-secondary {
+            background-color: var(--cs-secondary);
+        }
+
+        .badge-awp {
+            background-color: #ff4655;
+        }
+
+        .badge-rifle {
+            background-color: #1e90ff;
+        }
+
+        .badge-entry {
+            background-color: #ff8c00;
+        }
+
+        .badge-lurk {
+            background-color: #9370db;
+        }
+
+        .badge-support {
+            background-color: #32cd32;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        table th {
+            background-color: rgba(248, 183, 0, 0.1);
+            border-bottom: 2px solid var(--cs-primary);
+        }
+
+        table tr {
+            border-bottom: 1px solid rgba(230, 230, 250, 0.1);
+        }
+
+        table tr:hover {
+            background-color: rgba(30, 144, 255, 0.05);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--cs-primary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(230, 230, 250, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--cs-primary);
+            border-radius: 4px;
+        }
+
+        .teams-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .team-badge {
+            display: flex;
+            align-items: center;
+            background-color: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(248, 183, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .team-badge img {
+            height: 24px;
+            margin-right: 0.5rem;
+        }
+
+        .highlight {
+            color: var(--cs-accent);
+            font-weight: bold;
+        }
+
+        .comparison-chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin: 2rem 0;
+        }
+
+        #comparePlayersForm label {
+            margin-right: 0.5rem;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .chart-container, .comparison-chart-container {
+                height: 250px;
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header p-6 mb-8">
+        <div class="container mx-auto">
+            <h1 class="text-4xl font-bold mb-2 text-center">CS2 2024 年度 Top20 选手风格特点分析</h1>
+            <p class="text-xl text-center opacity-75">深入解析HLTV评选的年度最佳选手们的个人特点与战斗风格</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pb-12">
+        <!-- 导航选项卡 -->
+        <div class="tabs mb-6">
+            <div class="tab active" data-tab="introduction">引言</div>
+            <div class="tab" data-tab="dimensions">评估维度</div>
+            <div class="tab" data-tab="players">选手分析</div>
+            <div class="tab" data-tab="comparison">选手对比</div>
+            <div class="tab" data-tab="conclusion">结论</div>
+        </div>
+
+        <!-- 引言部分 -->
+        <section id="introduction" class="tab-content active mb-12">
+            <h2 class="text-3xl font-bold mb-6 section-title pl-4">引言</h2>
+            <div class="bg-[#1a1a2e] p-6 rounded-lg">
+                <p class="mb-4">
+                    Counter-Strike 2 (CS2) 作为全球最受欢迎的电子竞技游戏之一，拥有着众多技艺精湛的职业选手。每年年末，HLTV都会评选出当年表现最为出色的Top20选手，这一榜单被公认为CS电竞领域最权威的个人排名。
+                </p>
+                <p class="mb-4">
+                    2024年的CS2竞技场景非常精彩，来自Team Spirit的年轻新星donk异军突起，成为了年度第一；G2的狙击手m0NESY继续展现出惊人的大赛表现力；而法国传奇ZywOo则保持着他一贯的高水准，这三位选手构成了2024年的三巨头。
+                </p>
+                <p class="mb-6">
+                    本分析旨在超越简单的排名，深入挖掘这些顶尖选手的独特风格特点和游戏理解。我们设计了8个关键属性维度，通过这些维度对Top20选手进行全面评估，以揭示他们成功的秘密。
+                </p>
+
+                <h3 class="text-2xl font-bold mb-4">2024年HLTV Top20选手完整名单</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>选手</th>
+                                <th>国籍</th>
+                                <th>战队</th>
+                                <th>主要角色</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Danil "donk" Kryshkovets</td>
+                                <td>🇷🇺 俄罗斯</td>
+                                <td>Team Spirit</td>
+                                <td><span class="badge badge-rifle">步枪手</span> <span class="badge badge-entry">进攻点</span></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Ilya "m0NESY" Osipov</td>
+                                <td>🇷🇺 俄罗斯</td>
+                                <td>G2/Falcons</td>
+                                <td><span class="badge badge-awp">狙击手</span></td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Mathieu "ZywOo" Herbaut</td>
+                                <td>🇫🇷 法国</td>
+                                <td>Vitality</td>
+                                <td><span class="badge badge-awp">狙击手</span></td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Nikola "NiKo" Kovač</td>
+                                <td>🇧🇦 波黑</td>
+                                <td>G2</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Justinas "jL" Lekavicius</td>
+                                <td>🇱🇹 立陶宛</td>
+                                <td>Natus Vincere</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Dmitry "sh1ro" Sokolov</td>
+                                <td>🇷🇺 俄罗斯</td>
+                                <td>Team Spirit</td>
+                                <td><span class="badge badge-awp">狙击手</span></td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Shahar "flameZ" Shushan</td>
+                                <td>🇮🇱 以色列</td>
+                                <td>Vitality</td>
+                                <td><span class="badge badge-rifle">步枪手</span> <span class="badge badge-entry">进攻点</span></td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>Helvijs "broky" Saukants</td>
+                                <td>🇱🇻 拉脱维亚</td>
+                                <td>FaZe Clan</td>
+                                <td><span class="badge badge-awp">狙击手</span></td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>Valeriy "b1t" Vakhovskiy</td>
+                                <td>🇺🇦 乌克兰</td>
+                                <td>Natus Vincere</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>David "frozen" Čerňanský</td>
+                                <td>🇸🇰 斯洛伐克</td>
+                                <td>MOUZ</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>Ihor "w0nderful" Zhdanov</td>
+                                <td>🇺🇦 乌克兰</td>
+                                <td>Natus Vincere</td>
+                                <td><span class="badge badge-awp">狙击手</span></td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>Mario "malbsMd" Samayoa</td>
+                                <td>🇪🇸 西班牙</td>
+                                <td>G2</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td>Lotan "Spinx" Giladi</td>
+                                <td>🇮🇱 以色列</td>
+                                <td>Vitality</td>
+                                <td><span class="badge badge-rifle">步枪手</span> <span class="badge badge-lurk">潜伏</span></td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td>Dorian "xertioN" Berman</td>
+                                <td>🇮🇱 以色列</td>
+                                <td>FaZe Clan</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>15</td>
+                                <td>Ismailcan "XANTARES" Dörtkardeş</td>
+                                <td>🇹🇷 土耳其</td>
+                                <td>Eternal Fire</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>16</td>
+                                <td>Mihai "iM" Ivan</td>
+                                <td>🇷🇴 罗马尼亚</td>
+                                <td>MOUZ</td>
+                                <td><span class="badge badge-rifle">步枪手</span> <span class="badge badge-support">支援</span></td>
+                            </tr>
+                            <tr>
+                                <td>17</td>
+                                <td>Jimi "Jimpphat" Salo</td>
+                                <td>🇫🇮 芬兰</td>
+                                <td>Liquid</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>18</td>
+                                <td>Robin "ropz" Kool</td>
+                                <td>🇪🇪 爱沙尼亚</td>
+                                <td>FaZe Clan</td>
+                                <td><span class="badge badge-rifle">步枪手</span> <span class="badge badge-lurk">潜伏</span></td>
+                            </tr>
+                            <tr>
+                                <td>19</td>
+                                <td>Jonathan "EliGE" Jablonowski</td>
+                                <td>🇺🇸 美国</td>
+                                <td>Complexity</td>
+                                <td><span class="badge badge-rifle">步枪手</span></td>
+                            </tr>
+                            <tr>
+                                <td>20</td>
+                                <td>Ádám "torzsi" Torzsás</td>
+                                <td>🇭🇺 匈牙利</td>
+                                <td>MOUZ</td>
+                                <td><span class="badge badge-awp">狙击手</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-2xl font-bold mt-8 mb-4">主要战队分布</h3>
+                <div class="teams-container">
+                    <div class="team-badge">
+                        <img src="https://www.hltv.org/img/static/team/logo/10868" alt="Team Spirit">
+                        <span>Team Spirit: 2名选手</span>
+                    </div>
+                    <div class="team-badge">
+                        <img src="https://www.hltv.org/img/static/team/logo/5995" alt="G2">
+                        <span>G2: 3名选手</span>
+                    </div>
+                    <div class="team-badge">
+                        <img src="https://www.hltv.org/img/static/team/logo/9565" alt="Vitality">
+                        <span>Vitality: 3名选手</span>
+                    </div>
+                    <div class="team-badge">
+                        <img src="https://www.hltv.org/img/static/team/logo/4608" alt="Natus Vincere">
+                        <span>Natus Vincere: 3名选手</span>
+                    </div>
+                    <div class="team-badge">
+                        <img src="https://www.hltv.org/img/static/team/logo/6667" alt="FaZe">
+                        <span>FaZe Clan: 3名选手</span>
+                    </div>
+                    <div class="team-badge">
+                        <img src="https://www.hltv.org/img/static/team/logo/4494" alt="MOUZ">
+                        <span>MOUZ: 3名选手</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 评估维度部分 -->
+        <section id="dimensions" class="tab-content mb-12">
+            <h2 class="text-3xl font-bold mb-6 section-title pl-4">评估维度</h2>
+            <p class="mb-6">
+                为了全面评估每位选手的特点，我们设计了以下8个关键属性维度。每个维度分值范围为1-10分，其中1分表示该维度表现极弱，10分表示表现极强。
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="dimension-card p-4 rounded">
+                    <h3 class="text-xl font-bold mb-2 text-[#f8b700]">1. 机械瞄准 (Aim Precision)</h3>
+                    <p>
+                        衡量选手的瞄准精确度、爆头率和射击稳定性。高分代表选手拥有极高的瞄准精确度，能够在各种距离和角度下准确击杀敌人，爆头率高，压枪控制出色。
+                    </p>
+                    <p class="mt-2 italic opacity-75">
+                        评分因素：爆头率、每回合击杀数 (KPR)、每回合伤害 (ADR)、点射与扫射的精确度
+                    </p>
+                </div>
+
+                <div class="dimension-card p-4 rounded">
+                    <h3 class="text-xl font-bold mb-2 text-[#f8b700]">2. 进攻性 (Aggression)</h3>
+                    <p>
+                        衡量选手的打法风格是激进进攻还是保守防守。高分代表选手倾向于主动出击、寻找对抗，敢于做出高风险高回报的进攻决策，常常担任开路先锋。
+                    </p>
+                    <p class="mt-2 italic opacity-75">
+                        评分因素：首杀次数、T方进攻节奏、对抗频率、风险接受度
+                    </p>
+                </div>
+
+                <div class="dimension-card p-4 rounded">
+                    <h3 class="text-xl font-bold mb-2 text-[#f8b700]">3. 一致性 (Consistency)</h3>
+                    <p>
+                        衡量选手在不同比赛、地图和情况下的表现稳定程度。高分代表选手很少有低迷表现，能在各种状况下保持稳定的高水平发挥。
+                    </p>
+                    <p class="mt-2 italic opacity-75">
+                        评分因素：KAST值、比赛评分波动性、地图池深度、不同对手间表现差异
+                    </p>
+                </div>
+
+                <div class="dimension-card p-4 rounded">
+                    <h3 class="text-xl font-bold mb-2 text-[#f8b700]">4. 大赛表现 (Big Match Performance)</h3>
+                    <p>
+                        衡量选手在重要比赛中的发挥能力。高分代表选手在Major、决赛、淘汰赛等高压力场合能够有出色发挥，甚至表现更佳。
+                    </p>
+                    <p class="mt-2 italic opacity-75">
+                        评分因素：Major表现、决赛表现、MVP/EVP数量、关键回合贡献
+                    </p>
+                </div>
+
+                <div class="dimension-card p-4 rounded">
+                    <h3 class="text-xl font-bold mb-2 text-[#f8b700]">5. 适应性 (Adaptability)</h3>
+                    <p>
+                        衡量选手适应不同地图、对手风格和比赛情况的能力。高分代表选手能够快速调整战术、武器选择和打法来应对不同情况。
+                    </p>
+                    <p class="mt-2 italic opacity-75">
+                        评分因素：地图池广度、武器多样性、应对逆境表现、战术适应能力
+                    </p>
+                </div>
+
+                <div class="dimension-card p-4 rounded">
+                    <h3 class="text-xl font-bold mb-2 text-[#f8b700]">6. 武器专精 (Weapon Specialization)</h3>
+                    <p>
+                        衡量选手专精的武器使用能力。高分代表选手在其主要武器（AWP狙击枪或特定步枪）上有非凡的掌握和理解。
+                    </p>
+                    <p class="mt-2 italic opacity-75">
+                        评分因素：主要武器击杀效率、武器多样性、经济轮表现、特殊武器理解
+                    </p>
+                </div>
+
+                <div class="dimension-card p-4 rounded">
+                    <h3 class="text-xl font-bold mb-2 text-[#f8b700]">7. 战术智商 (Tactical IQ)</h3>
+                    <p>
+                        衡量选手的游戏理解、位置意识和决策能力。高分代表选手能够做出正确的战术决策，有出色的地图控制和敌人预判能力。
+                    </p>
+                    <p class="mt-2 italic opacity-75">
+                        评分因素：残局能力、信息使用、时机把握、团队配合
+                    </p>
+                </div>
+
+                <div class="dimension-card p-4 rounded">
+                    <h3 class="text-xl font-bold mb-2 text-[#f8b700]">8. 影响力 (Impact)</h3>
+                    <p>
+                        衡量选手对比赛结果的直接影响力和关键回合的表现。高分代表选手能够在关键时刻站出来改变比赛局势，有决定性的表现。
+                    </p>
+                    <p class="mt-2 italic opacity-75">
+                        评分因素：影响力评分、多杀回合数量、残局胜率、关键击杀比例
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-8 p-6 bg-[#1a1a2e] rounded-lg">
+                <h3 class="text-2xl font-bold mb-4">评分标准说明</h3>
+                <p class="mb-4">
+                    每个维度的评分都基于深入分析选手的比赛数据、高光表现和风格特点。评分参考了HLTV的统计数据、比赛录像分析、专家观点以及选手自身描述。
+                </p>
+                <p>
+                    我们特别关注选手在2024年的表现，包括他们在Major、IEM等大型赛事中的发挥，以及他们对团队的贡献。评分过程中，我们综合考虑了量化数据和定性分析，力求为每位选手提供客观公正的评估。
+                </p>
+            </div>
+        </section>
+
+        <!-- 选手分析部分 -->
+        <section id="players" class="tab-content mb-12">
+            <h2 class="text-3xl font-bold mb-6 section-title pl-4">Top10选手风格分析</h2>
+            
+            <!-- 选手卡片网格 -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- donk -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/hMmmOSQqWnwYV2b76p3a-l.png?ixlib=java-2.1.0&w=400&s=b1a7000576df4dd8034aff7ccd6454a1" alt="donk" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">donk</h3>
+                                <p class="text-[#ff4655]">Danil Kryshkovets</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇷🇺</span>
+                                    <span class="text-sm opacity-75">Team Spirit</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #1</span>
+                                    <span class="badge badge-rifle ml-1">步枪手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="donkChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                作为2024年的CS2第一人，donk以惊人的机械瞄准和极强的进攻性脱颖而出。他在IEM Katowice上创造了1.70的历史性评分，展现了世界级的进攻能力与高压下的表现。
+                            </p>
+                            <p>
+                                donk的标志性特点是他的侵略性打法和出色的步枪能力，能够在各种距离下精准击杀对手。他的影响力极强，常常在关键回合里做出决定性表现，同时作为一名年轻选手，他的适应性和战术理解也在稳步提高。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>IEM Katowice 2024 冠军 & MVP</li>
+                                <li>BLAST Spring Final 2024 冠军 & MVP</li>
+                                <li>BetBoom Dacha 2024 冠军 & MVP</li>
+                                <li>Perfect World Major 2024 冠军 & MVP</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.35</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>大赛评分</span>
+                                <span class="stat-value">1.32</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>MVP数量</span>
+                                <span class="stat-value">5</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>影响力评分</span>
+                                <span class="stat-value">1.56</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- m0NESY -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/FNXOi4TDq8pQviBQXra3Pl.png?ixlib=java-2.1.0&w=400&s=02d9b7cbef3bf14db91bdab5caebcab2" alt="m0NESY" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">m0NESY</h3>
+                                <p class="text-[#ff4655]">Ilya Osipov</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇷🇺</span>
+                                    <span class="text-sm opacity-75">G2/Falcons</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #2</span>
+                                    <span class="badge badge-awp ml-1">狙击手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="m0NESYChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                m0NESY作为当今世界上最顶尖的狙击手之一，展现出了无与伦比的大赛表现能力。他在舞台赛和淘汰赛中的发挥尤为出色，是2024年最佳舞台和重要比赛选手。
+                            </p>
+                            <p>
+                                他的AWP狙击技术炉火纯青，能够创造出不可思议的击杀和高光时刻。比起其他选手，m0NESY在面对顶级对手时表现得更加出色，展现了他处理压力的能力。尽管年仅19岁，他的战术理解和团队贡献已经达到了很高的水平。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>IEM Dallas 2024 冠军 & MVP</li>
+                                <li>BLAST Fall Final 2024 冠军 & MVP</li>
+                                <li>BLAST World Final 2024 冠军 & MVP</li>
+                                <li>PGL Major Copenhagen 2024 半决赛</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.27</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>舞台赛评分</span>
+                                <span class="stat-value">1.35</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>MVP数量</span>
+                                <span class="stat-value">3</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>AWP击杀率</span>
+                                <span class="stat-value">0.50/回合</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ZywOo -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/JFNgx5OXL2zJDVCfxY6s1R.png?ixlib=java-2.1.0&w=400&s=65ed0a739faa7fcb0fcdd73e2ef4a01b" alt="ZywOo" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">ZywOo</h3>
+                                <p class="text-[#ff4655]">Mathieu Herbaut</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇫🇷</span>
+                                    <span class="text-sm opacity-75">Vitality</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #3</span>
+                                    <span class="badge badge-awp ml-1">狙击手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="ZywOoChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                ZywOo可能是CS2历史上最具一致性的选手，他在2024年的13场比赛中保持了全部正面评分，创造了88%的地图正面评分率，展现了令人难以置信的稳定性。
+                            </p>
+                            <p>
+                                法国天才的AWP技术精湛，但更令人印象深刻的是他的全能型打法。ZywOo在各种武器上都有出色表现，步枪、手枪同样出色。他的战术理解和安静的游戏风格使他能够总是做出正确的决策，常常在团队需要时挺身而出。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>IEM Cologne 2024 冠军 & MVP</li>
+                                <li>ESL Pro League S19 亚军 & MVP</li>
+                                <li>IEM Dallas 2024 亚军</li>
+                                <li>9次奖项（2MVP + 7EVP）</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.31</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>KAST比率</span>
+                                <span class="stat-value">77.7%</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>正面评分地图比例</span>
+                                <span class="stat-value">88%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>对阵前5名战队评分</span>
+                                <span class="stat-value">1.25</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NiKo -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/2HxBDxCb9cWZXeNexHLG4P.png?ixlib=java-2.1.0&w=400&s=2e389f879f5dad177be82b3b4de67af5" alt="NiKo" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">NiKo</h3>
+                                <p class="text-[#ff4655]">Nikola Kovač</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇧🇦</span>
+                                    <span class="text-sm opacity-75">G2</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #4</span>
+                                    <span class="badge badge-rifle ml-1">步枪手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="NiKoChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                NiKo可能是CS历史上机械瞄准最出色的选手之一，他对AK-47和Desert Eagle的掌握堪称完美。作为一名全能选手，他能够在步枪、狙击和指挥等多个角色中切换。
+                            </p>
+                            <p>
+                                他的风格特点是令人难以置信的精准瞄准和惊人的单点爆发力，常能创造出不可思议的多杀。然而，他在一致性和大赛关键时刻的表现上有所欠缺，这也是他职业生涯中一直面临的挑战。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>IEM Dallas 2024 冠军</li>
+                                <li>BLAST Fall Final 2024 冠军</li>
+                                <li>BLAST World Final 2024 冠军</li>
+                                <li>Esports World Cup 2024 亚军</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.18</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>爆头比率</span>
+                                <span class="stat-value">56.1%</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>Desert Eagle评分</span>
+                                <span class="stat-value">1.35</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>EVP数量</span>
+                                <span class="stat-value">6</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- jL -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/3YxN1MTYqq3OReDYXYkm0Z.png?ixlib=java-2.1.0&w=400&s=b290f91adfe1fdcbba5b05b0a86fe4dd" alt="jL" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">jL</h3>
+                                <p class="text-[#ff4655]">Justinas Lekavicius</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇱🇹</span>
+                                    <span class="text-sm opacity-75">Natus Vincere</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #5</span>
+                                    <span class="badge badge-rifle ml-1">步枪手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="jLChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                jL是2024年最大的惊喜之一，他作为立陶宛步枪手在Natus Vincere中脱颖而出。jL的打法既有侵略性又有巧妙的战术理解，使他成为了非常全面的选手。
+                            </p>
+                            <p>
+                                他在PGL Major Copenhagen上的出色表现，特别是在夺冠过程中展现的冷静和大赛能力，证明了他属于世界顶级水平。jL的步枪精准，战术意识清晰，适应性强，是NAVI体系中的重要环节。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>PGL Major Copenhagen 2024 冠军 & MVP</li>
+                                <li>Esports World Cup 2024 冠军</li>
+                                <li>BLAST Premier Spring Groups 2024 冠军</li>
+                                <li>4次EVP奖项</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>Major评分</span>
+                                <span class="stat-value">1.26</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.19</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>大赛评分</span>
+                                <span class="stat-value">1.18</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>进入残局胜率</span>
+                                <span class="stat-value">68.4%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- sh1ro -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/jO_IIxmLbQkFiG1qdAuNyJ.png?ixlib=java-2.1.0&w=400&s=0059ddde9d53d6d0320e1f1dc9809b8c" alt="sh1ro" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">sh1ro</h3>
+                                <p class="text-[#ff4655]">Dmitry Sokolov</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇷🇺</span>
+                                    <span class="text-sm opacity-75">Team Spirit</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #6</span>
+                                    <span class="badge badge-awp ml-1">狙击手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="sh1roChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                sh1ro作为Team Spirit的狙击手，以其精准、稳定而高效的打法著称。他的AWP风格更偏向保守和战术性，与donk的激进打法形成了完美互补。
+                            </p>
+                            <p>
+                                他的战术智商和位置感极为出色，总是能找到最佳的狙击位置。sh1ro的另一个标志性特点是他的一致性，很少有低迷表现，是团队的可靠支柱。他的残局处理能力也是世界一流水平，展现了他冷静的思考和精湛的技术。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>IEM Katowice 2024 冠军</li>
+                                <li>BLAST Spring Final 2024 冠军</li>
+                                <li>BetBoom Dacha 2024 冠军</li>
+                                <li>Perfect World Major 2024 冠军</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.20</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>存活率</span>
+                                <span class="stat-value">45.7%</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>AWP击杀比例</span>
+                                <span class="stat-value">48.5%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>残局胜率</span>
+                                <span class="stat-value">67.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- flameZ -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/P4Ty4XVf1RjKhkZQXCVNIa.png?ixlib=java-2.1.0&w=400&s=e69cff28fcd8eafaf561f42f9af1671a" alt="flameZ" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">flameZ</h3>
+                                <p class="text-[#ff4655]">Shahar Shushan</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇮🇱</span>
+                                    <span class="text-sm opacity-75">Vitality</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #7</span>
+                                    <span class="badge badge-rifle ml-1">步枪手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="flameZChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                flameZ作为Vitality的侵略性步枪手，以其爆发力和攻击型打法为球队带来了活力。他是最出色的进攻点之一，常常承担开路和制造空间的责任。
+                            </p>
+                            <p>
+                                以色列选手拥有极快的反应速度和精准的瞄准，特别擅长近距离交火。他与ZywOo的配合非常默契，通常充当先锋角色，为ZywOo创造更多发挥空间。flameZ的爆发力是他的最大特点，能够在短时间内迅速改变回合局势。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>IEM Cologne 2024 冠军</li>
+                                <li>ESL Pro League S19 亚军</li>
+                                <li>IEM Dallas 2024 亚军</li>
+                                <li>3次EVP奖项</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.15</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>首杀尝试率</span>
+                                <span class="stat-value">26.2%</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>每回合伤害</span>
+                                <span class="stat-value">81.4</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>T方评分</span>
+                                <span class="stat-value">1.19</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- broky -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/-FnTOTzofgvDQpEsxpCpe7.png?ixlib=java-2.1.0&w=400&s=ae7dea3d6e0c954979b89a9d46be58e6" alt="broky" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">broky</h3>
+                                <p class="text-[#ff4655]">Helvijs Saukants</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇱🇻</span>
+                                    <span class="text-sm opacity-75">FaZe Clan</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #8</span>
+                                    <span class="badge badge-awp ml-1">狙击手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="brokyChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                broky作为FaZe Clan的稳定狙击手，以其冷静、精确和高效的打法著称。与许多进攻型狙击手不同，broky更倾向于战术性和安全的打法，但在关键时刻能够做出大胆决策。
+                            </p>
+                            <p>
+                                拉脱维亚选手的AWP风格十分独特，他善于找到最佳位置，耐心等待时机，同时也拥有出色的空枪恢复能力。broky的另一个突出特点是他在残局中的优秀表现，展现了他的战术理解和冷静决策能力。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>PGL Major Copenhagen 2024 亚军</li>
+                                <li>Perfect World Major 2024 半决赛</li>
+                                <li>BLAST Fall Groups 2024 冠军</li>
+                                <li>3次EVP奖项</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.14</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>残局胜率</span>
+                                <span class="stat-value">58.9%</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>AWP击杀比例</span>
+                                <span class="stat-value">45.7%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>2024 Major平均评分</span>
+                                <span class="stat-value">1.17</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- b1t -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/6D5gPU8xbOTqp29ITH9Wcc.png?ixlib=java-2.1.0&w=400&s=75b44ff0bbe931ef46b9e71a9dc3f363" alt="b1t" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">b1t</h3>
+                                <p class="text-[#ff4655]">Valeriy Vakhovskiy</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇺🇦</span>
+                                    <span class="text-sm opacity-75">Natus Vincere</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #9</span>
+                                    <span class="badge badge-rifle ml-1">步枪手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="b1tChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                b1t是Natus Vincere的关键步枪手，以其计算型打法和冷静的游戏风格著称。他与队友的配合默契，能够在各种位置上提供稳定的火力支持。
+                            </p>
+                            <p>
+                                乌克兰选手的游戏特点是高效、精准和有序，很少做出不必要的冒险。他的步枪控制出色，特别是在中远距离的交火中尤为出色。b1t的战术智商和对比赛节奏的把握也是他的强项，使他成为NAVI战术体系中的重要一环。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>PGL Major Copenhagen 2024 冠军</li>
+                                <li>Esports World Cup 2024 冠军 & MVP</li>
+                                <li>BLAST Premier Spring Groups 2024 冠军</li>
+                                <li>3次EVP奖项</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.13</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>爆头率</span>
+                                <span class="stat-value">49.8%</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>支援击杀率</span>
+                                <span class="stat-value">22.1%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Major评分</span>
+                                <span class="stat-value">1.15</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- frozen -->
+                <div class="player-card rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <img src="https://img-cdn.hltv.org/playerbodyshot/1pCah9NyDcO1wUG9LZZdOE.png?ixlib=java-2.1.0&w=400&s=f8b138c977b844e61ecbfb91d42e4d6e" alt="frozen" class="w-20 h-20 rounded-full player-image object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-2xl font-bold">frozen</h3>
+                                <p class="text-[#ff4655]">David Čerňanský</p>
+                                <div class="flex mt-1">
+                                    <span class="mr-2">🇸🇰</span>
+                                    <span class="text-sm opacity-75">MOUZ</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary">排名 #10</span>
+                                    <span class="badge badge-rifle ml-1">步枪手</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="frozenChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">风格特点</h4>
+                            <p class="mb-3">
+                                frozen是MOUZ的核心步枪手，以其全面而平衡的游戏风格著称。他在攻防两端都能提供稳定的输出，适应性极强，能够根据团队需要灵活调整自己的角色。
+                            </p>
+                            <p>
+                                斯洛伐克选手的最大特点是他的全能性，无论是步枪、手枪还是狙击枪都有不俗表现。frozen的战术理解深刻，位置感优秀，经常能在关键时刻做出精准的判断和贡献。他也是队内的情绪稳定器，能够在逆境中保持冷静。
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">主要成就</h4>
+                            <ul class="list-disc list-inside">
+                                <li>ESL Pro League S19 冠军 & MVP</li>
+                                <li>IEM Chengdu 2024 冠军</li>
+                                <li>BetBoom Dacha Belgrade 2024 冠军</li>
+                                <li>4次EVP奖项</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-bold mb-2">统计亮点</h4>
+                            <div class="flex justify-between mb-2">
+                                <span>年度平均评分</span>
+                                <span class="stat-value">1.12</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>KAST比率</span>
+                                <span class="stat-value">73.8%</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>每回合伤害</span>
+                                <span class="stat-value">79.6</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>多杀回合比例</span>
+                                <span class="stat-value">19.7%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 选手对比部分 -->
+        <section id="comparison" class="tab-content mb-12">
+            <h2 class="text-3xl font-bold mb-6 section-title pl-4">选手属性对比</h2>
+            
+            <div class="bg-[#1a1a2e] p-6 rounded-lg mb-8">
+                <h3 class="text-2xl font-bold mb-4">选择选手进行对比</h3>
+                <form id="comparePlayersForm" class="mb-6">
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block mb-2">选手 1</label>
+                            <div class="select-wrapper">
+                                <select id="player1" class="bg-transparent w-full p-2 outline-none">
+                                    <option value="donk">donk</option>
+                                    <option value="m0NESY">m0NESY</option>
+                                    <option value="ZywOo">ZywOo</option>
+                                    <option value="NiKo">NiKo</option>
+                                    <option value="jL">jL</option>
+                                    <option value="sh1ro">sh1ro</option>
+                                    <option value="flameZ">flameZ</option>
+                                    <option value="broky">broky</option>
+                                    <option value="b1t">b1t</option>
+                                    <option value="frozen">frozen</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block mb-2">选手 2</label>
+                            <div class="select-wrapper">
+                                <select id="player2" class="bg-transparent w-full p-2 outline-none">
+                                    <option value="donk">donk</option>
+                                    <option value="m0NESY" selected>m0NESY</option>
+                                    <option value="ZywOo">ZywOo</option>
+                                    <option value="NiKo">NiKo</option>
+                                    <option value="jL">jL</option>
+                                    <option value="sh1ro">sh1ro</option>
+                                    <option value="flameZ">flameZ</option>
+                                    <option value="broky">broky</option>
+                                    <option value="b1t">b1t</option>
+                                    <option value="frozen">frozen</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block mb-2">选手 3 (可选)</label>
+                            <div class="select-wrapper">
+                                <select id="player3" class="bg-transparent w-full p-2 outline-none">
+                                    <option value="">-- 不选择 --</option>
+                                    <option value="donk">donk</option>
+                                    <option value="m0NESY">m0NESY</option>
+                                    <option value="ZywOo" selected>ZywOo</option>
+                                    <option value="NiKo">NiKo</option>
+                                    <option value="jL">jL</option>
+                                    <option value="sh1ro">sh1ro</option>
+                                    <option value="flameZ">flameZ</option>
+                                    <option value="broky">broky</option>
+                                    <option value="b1t">b1t</option>
+                                    <option value="frozen">frozen</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="mt-4 bg-[#f8b700] hover:bg-[#e6a800] text-[#16161d] px-4 py-2 rounded font-bold transition-all">
+                        对比选手
+                    </button>
+                </form>
+                
+                <div class="comparison-chart-container mx-auto">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-[#1a1a2e] p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">Top 3选手属性对比</h3>
+                    <p class="mb-4">
+                        2024年的前三名选手展现了不同的特点和风格：
+                    </p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><span class="font-bold text-[#f8b700]">donk</span> - 极强的进攻性和机械瞄准，但在一致性和战术智商上略低于其他Top3选手</li>
+                        <li><span class="font-bold text-[#f8b700]">m0NESY</span> - 大赛表现和AWP狙击能力突出，舞台赛发挥极为出色</li>
+                        <li><span class="font-bold text-[#f8b700]">ZywOo</span> - 全面性和一致性无人能及，各个属性都保持极高水平</li>
+                    </ul>
+                    <p class="mt-4">
+                        这三位选手代表了不同的成功路径：donk是年轻的进攻型天才，m0NESY是大赛狙击手典范，而ZywOo则是完美的全能型选手。
+                    </p>
+                </div>
+                
+                <div class="bg-[#1a1a2e] p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">狙击手与步枪手对比</h3>
+                    <p class="mb-4">
+                        通过对比AWP狙击手(m0NESY, ZywOo, sh1ro, broky)与精英步枪手(donk, NiKo, jL, flameZ)，我们可以发现一些有趣的模式：
+                    </p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>狙击手通常在<span class="highlight">武器专精</span>和<span class="highlight">一致性</span>维度得分更高</li>
+                        <li>步枪手在<span class="highlight">进攻性</span>和<span class="highlight">机械瞄准</span>维度得分更高</li>
+                        <li>顶尖狙击手的<span class="highlight">适应性</span>通常低于顶尖步枪手</li>
+                        <li>两类选手在<span class="highlight">大赛表现</span>和<span class="highlight">影响力</span>上没有明显的模式差异</li>
+                    </ul>
+                    <p class="mt-4">
+                        这些差异反映了不同武器和角色在CS2中要求的不同技能集和游戏风格。
+                    </p>
+                </div>
+                
+                <div class="bg-[#1a1a2e] p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">不同战队风格比较</h3>
+                    <p class="mb-4">
+                        通过分析不同战队的选手，我们可以观察到战队风格如何影响选手特点：
+                    </p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><span class="font-bold text-[#f8b700]">Team Spirit (donk, sh1ro)</span> - 进攻型步枪手搭配保守型狙击手的组合</li>
+                        <li><span class="font-bold text-[#f8b700]">G2 (m0NESY, NiKo)</span> - 大赛表现出色，机械瞄准顶尖，但一致性较弱</li>
+                        <li><span class="font-bold text-[#f8b700]">Vitality (ZywOo, flameZ)</span> - 平衡型狙击手搭配侵略性步枪手</li>
+                        <li><span class="font-bold text-[#f8b700]">NAVI (jL, b1t)</span> - 战术智商和团队协作突出</li>
+                    </ul>
+                    <p class="mt-4">
+                        这些战队风格差异体现了CS2战术体系的多样性，以及不同角色如何互相补充以创造成功的团队。
+                    </p>
+                </div>
+                
+                <div class="bg-[#1a1a2e] p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">共同特质分析</h3>
+                    <p class="mb-4">
+                        尽管风格各异，但CS2顶尖选手都具备一些共同特质：
+                    </p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>所有Top10选手在<span class="highlight">机械瞄准</span>上都有7分以上的高分</li>
+                        <li>所有顶级选手在<span class="highlight">适应性</span>上都有6分以上的得分</li>
+                        <li><span class="highlight">影响力</span>是区分Top5和其他选手的关键因素</li>
+                        <li>高水平的<span class="highlight">战术智商</span>是所有顶尖选手的基础</li>
+                    </ul>
+                    <p class="mt-4">
+                        这些共同特质表明，尽管游戏风格和特长不同，成为世界顶尖CS2选手需要在多个关键领域达到高水平。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结论部分 -->
+        <section id="conclusion" class="tab-content mb-12">
+            <h2 class="text-3xl font-bold mb-6 section-title pl-4">结论与趋势</h2>
+            
+            <div class="bg-[#1a1a2e] p-6 rounded-lg mb-8">
+                <h3 class="text-2xl font-bold mb-4">2024年CS2选手特点总结</h3>
+                <p class="mb-4">
+                    通过分析2024年HLTV Top20选手的风格特点，我们可以得出以下结论：
+                </p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>2024年是进攻型步枪手的崛起之年，以donk为代表的年轻步枪手展现了令人震惊的机械瞄准和进攻能力</li>
+                    <li>大赛表现能力成为了区分顶尖选手的关键因素，特别是m0NESY和jL在Major等重要比赛中的出色发挥</li>
+                    <li>一致性依然是长期成功的基础，ZywOo展示了无与伦比的稳定性</li>
+                    <li>AWP狙击手在CS2中仍然是关键角色，但与CS:GO相比，步枪手的影响力有所增强</li>
+                    <li>全能型选手比单一特长选手更有优势，适应性和多功能性变得越来越重要</li>
+                </ul>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-[#1a1a2e] p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">CS2的演变趋势</h3>
+                    <p class="mb-4">
+                        从CS:GO向CS2的过渡带来了一些明显的变化：
+                    </p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>机械瞄准的重要性增加，反映在donk, NiKo等选手的成功上</li>
+                        <li>战术节奏加快，进攻更加直接和多变</li>
+                        <li>对AWP狙击手的要求更高，需要更灵活的打法</li>
+                        <li>新生代选手适应CS2的速度快于老一代选手</li>
+                        <li>地图控制和信息获取的重要性提高</li>
+                    </ul>
+                    <p class="mt-4">
+                        这些趋势表明CS2正在朝着更加动态和多样化的游戏方向发展，为不同风格的选手提供了成功的机会。
+                    </p>
+                </div>
+                
+                <div class="bg-[#1a1a2e] p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">未来展望</h3>
+                    <p class="mb-4">
+                        基于2024年的观察，我们可以对CS2竞技未来做出以下预测：
+                    </p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>年轻选手将继续崛起，特别是具有适应性和创新游戏风格的选手</li>
+                        <li>全能型玩家将更受青睐，专一角色的选手需要扩展自己的能力范围</li>
+                        <li>战术深度和复杂性将增加，战术理解的重要性将提高</li>
+                        <li>CS2将继续平衡进攻和防守元素，使游戏保持竞争性</li>
+                        <li>个人风格将继续多样化，为观众带来更多精彩表现</li>
+                    </ul>
+                    <p class="mt-4">
+                        随着CS2的不断发展，我们期待看到更多风格迥异的选手在舞台上展现他们独特的才华和技巧。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-8 p-6 bg-[#1a1a2e] rounded-lg">
+                <h3 class="text-2xl font-bold mb-4">八维评分总表</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr>
+                                <th>选手</th>
+                                <th>机械瞄准</th>
+                                <th>进攻性</th>
+                                <th>一致性</th>
+                                <th>大赛表现</th>
+                                <th>适应性</th>
+                                <th>武器专精</th>
+                                <th>战术智商</th>
+                                <th>影响力</th>
+                                <th>平均分</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>donk</td>
+                                <td>9.5</td>
+                                <td>9.0</td>
+                                <td>7.5</td>
+                                <td>8.5</td>
+                                <td>8.0</td>
+                                <td>8.5</td>
+                                <td>7.5</td>
+                                <td>9.5</td>
+                                <td>8.5</td>
+                            </tr>
+                            <tr>
+                                <td>m0NESY</td>
+                                <td>9.0</td>
+                                <td>7.5</td>
+                                <td>8.0</td>
+                                <td>9.5</td>
+                                <td>7.5</td>
+                                <td>9.5</td>
+                                <td>8.0</td>
+                                <td>9.0</td>
+                                <td>8.5</td>
+                            </tr>
+                            <tr>
+                                <td>ZywOo</td>
+                                <td>9.0</td>
+                                <td>7.0</td>
+                                <td>9.5</td>
+                                <td>8.5</td>
+                                <td>9.0</td>
+                                <td>9.0</td>
+                                <td>9.0</td>
+                                <td>8.5</td>
+                                <td>8.7</td>
+                            </tr>
+                            <tr>
+                                <td>NiKo</td>
+                                <td>9.5</td>
+                                <td>8.0</td>
+                                <td>7.0</td>
+                                <td>7.5</td>
+                                <td>8.5</td>
+                                <td>8.5</td>
+                                <td>8.5</td>
+                                <td>8.0</td>
+                                <td>8.2</td>
+                            </tr>
+                            <tr>
+                                <td>jL</td>
+                                <td>8.5</td>
+                                <td>8.0</td>
+                                <td>8.0</td>
+                                <td>9.0</td>
+                                <td>7.5</td>
+                                <td>8.0</td>
+                                <td>8.5</td>
+                                <td>8.5</td>
+                                <td>8.3</td>
+                            </tr>
+                            <tr>
+                                <td>sh1ro</td>
+                                <td>8.0</td>
+                                <td>6.0</td>
+                                <td>8.5</td>
+                                <td>8.0</td>
+                                <td>7.0</td>
+                                <td>9.0</td>
+                                <td>9.0</td>
+                                <td>7.5</td>
+                                <td>7.9</td>
+                            </tr>
+                            <tr>
+                                <td>flameZ</td>
+                                <td>8.5</td>
+                                <td>9.0</td>
+                                <td>7.0</td>
+                                <td>7.5</td>
+                                <td>8.0</td>
+                                <td>7.5</td>
+                                <td>7.5</td>
+                                <td>8.0</td>
+                                <td>7.9</td>
+                            </tr>
+                            <tr>
+                                <td>broky</td>
+                                <td>8.0</td>
+                                <td>6.5</td>
+                                <td>8.0</td>
+                                <td>8.0</td>
+                                <td>7.0</td>
+                                <td>8.5</td>
+                                <td>8.5</td>
+                                <td>7.5</td>
+                                <td>7.8</td>
+                            </tr>
+                            <tr>
+                                <td>b1t</td>
+                                <td>8.0</td>
+                                <td>7.5</td>
+                                <td>8.0</td>
+                                <td>8.0</td>
+                                <td>7.5</td>
+                                <td>7.5</td>
+                                <td>8.5</td>
+                                <td>7.5</td>
+                                <td>7.8</td>
+                            </tr>
+                            <tr>
+                                <td>frozen</td>
+                                <td>8.0</td>
+                                <td>7.0</td>
+                                <td>8.0</td>
+                                <td>7.5</td>
+                                <td>8.5</td>
+                                <td>7.5</td>
+                                <td>8.0</td>
+                                <td>7.5</td>
+                                <td>7.8</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-8 p-6 bg-[#1a1a2e] rounded-lg">
+                <h3 class="text-2xl font-bold mb-4">最终思考</h3>
+                <p class="mb-4">
+                    CS2的顶尖选手们以其独特的风格和才能丰富了这个游戏。从donk的爆发力，到m0NESY的狙击精准，再到ZywOo的全面性，每位选手都为CS2带来了不同的魅力。
+                </p>
+                <p class="mb-4">
+                    通过八维属性分析，我们可以看到成为顶级选手的多种路径。有的选手依靠机械瞄准和爆发力，有的依靠一致性和智慧，但所有顶级选手都在多个维度保持高水平，没有一位选手是单一维度的强者。
+                </p>
+                <p>
+                    随着CS2的持续发展，我们期待看到更多风格独特的选手涌现，以及现有选手如何继续适应和进化。无论是年轻的新星还是经验丰富的老将，他们都将继续推动这个游戏的边界，为观众带来精彩的比赛和难忘的时刻。
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#1a1a2e] py-8 border-t border-[#f8b700] border-opacity-30">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">CS2 2024 Top20选手风格特点分析</p>
+            <p class="text-sm opacity-75">基于HLTV Top20排名与比赛数据分析</p>
+            <p class="text-sm opacity-75 mt-2">© 2025 CS2数据分析</p>
+        </div>
+    </footer>
+
+    <script>
+        // 选项卡切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // 雷达图数据
+            const dimensions = [
+                '机械瞄准', '进攻性', '一致性', '大赛表现',
+                '适应性', '武器专精', '战术智商', '影响力'
+            ];
+            
+            const playerData = {
+                donk: [9.5, 9.0, 7.5, 8.5, 8.0, 8.5, 7.5, 9.5],
+                m0NESY: [9.0, 7.5, 8.0, 9.5, 7.5, 9.5, 8.0, 9.0],
+                ZywOo: [9.0, 7.0, 9.5, 8.5, 9.0, 9.0, 9.0, 8.5],
+                NiKo: [9.5, 8.0, 7.0, 7.5, 8.5, 8.5, 8.5, 8.0],
+                jL: [8.5, 8.0, 8.0, 9.0, 7.5, 8.0, 8.5, 8.5],
+                sh1ro: [8.0, 6.0, 8.5, 8.0, 7.0, 9.0, 9.0, 7.5],
+                flameZ: [8.5, 9.0, 7.0, 7.5, 8.0, 7.5, 7.5, 8.0],
+                broky: [8.0, 6.5, 8.0, 8.0, 7.0, 8.5, 8.5, 7.5],
+                b1t: [8.0, 7.5, 8.0, 8.0, 7.5, 7.5, 8.5, 7.5],
+                frozen: [8.0, 7.0, 8.0, 7.5, 8.5, 7.5, 8.0, 7.5]
+            };
+            
+            const chartColors = {
+                donk: 'rgba(255, 70, 85, 0.7)',
+                m0NESY: 'rgba(30, 144, 255, 0.7)',
+                ZywOo: 'rgba(255, 255, 0, 0.7)',
+                NiKo: 'rgba(153, 102, 255, 0.7)',
+                jL: 'rgba(75, 192, 192, 0.7)',
+                sh1ro: 'rgba(255, 159, 64, 0.7)',
+                flameZ: 'rgba(255, 99, 132, 0.7)',
+                broky: 'rgba(54, 162, 235, 0.7)',
+                b1t: 'rgba(255, 206, 86, 0.7)',
+                frozen: 'rgba(75, 192, 192, 0.7)'
+            };
+            
+            // 创建选手雷达图
+            const createPlayerChart = (playerId, playerName) => {
+                const ctx = document.getElementById(playerId + 'Chart').getContext('2d');
+                
+                return new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: dimensions,
+                        datasets: [{
+                            label: playerName,
+                            data: playerData[playerId],
+                            backgroundColor: chartColors[playerId].replace('0.7', '0.2'),
+                            borderColor: chartColors[playerId],
+                            pointBackgroundColor: chartColors[playerId],
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: chartColors[playerId]
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    color: 'rgba(230, 230, 250, 0.1)'
+                                },
+                                grid: {
+                                    color: 'rgba(230, 230, 250, 0.1)'
+                                },
+                                pointLabels: {
+                                    color: 'rgba(230, 230, 250, 0.8)',
+                                    font: {
+                                        size: 10
+                                    }
+                                },
+                                ticks: {
+                                    stepSize: 2,
+                                    min: 0,
+                                    max: 10,
+                                    backdropColor: 'transparent',
+                                    color: 'rgba(230, 230, 250, 0.6)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            };
+            
+            // 创建选手对比图表
+            let comparisonChart = null;
+            
+            const createComparisonChart = (players) => {
+                if (comparisonChart) {
+                    comparisonChart.destroy();
+                }
+                
+                const ctx = document.getElementById('comparisonChart').getContext('2d');
+                const datasets = players.map(playerId => {
+                    if (!playerId) return null;
+                    
+                    return {
+                        label: playerId,
+                        data: playerData[playerId],
+                        backgroundColor: chartColors[playerId].replace('0.7', '0.1'),
+                        borderColor: chartColors[playerId],
+                        pointBackgroundColor: chartColors[playerId],
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: chartColors[playerId]
+                    };
+                }).filter(dataset => dataset !== null);
+                
+                comparisonChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: dimensions,
+                        datasets: datasets
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    color: 'rgba(230, 230, 250, 0.1)'
+                                },
+                                grid: {
+                                    color: 'rgba(230, 230, 250, 0.1)'
+                                },
+                                pointLabels: {
+                                    color: 'rgba(230, 230, 250, 0.8)',
+                                    font: {
+                                        size: 12
+                                    }
+                                },
+                                ticks: {
+                                    stepSize: 2,
+                                    min: 0,
+                                    max: 10,
+                                    backdropColor: 'transparent',
+                                    color: 'rgba(230, 230, 250, 0.6)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: 'rgba(230, 230, 250, 0.8)',
+                                    padding: 20,
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            };
+            
+            // 初始化所有选手雷达图
+            createPlayerChart('donk', 'donk');
+            createPlayerChart('m0NESY', 'm0NESY');
+            createPlayerChart('ZywOo', 'ZywOo');
+            createPlayerChart('NiKo', 'NiKo');
+            createPlayerChart('jL', 'jL');
+            createPlayerChart('sh1ro', 'sh1ro');
+            createPlayerChart('flameZ', 'flameZ');
+            createPlayerChart('broky', 'broky');
+            createPlayerChart('b1t', 'b1t');
+            createPlayerChart('frozen', 'frozen');
+            
+            // 初始化比较图表
+            createComparisonChart(['donk', 'm0NESY', 'ZywOo']);
+            
+            // 监听比较表单提交
+            document.getElementById('comparePlayersForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const player1 = document.getElementById('player1').value;
+                const player2 = document.getElementById('player2').value;
+                const player3 = document.getElementById('player3').value;
+                
+                const players = [player1, player2, player3].filter(p => p);
+                
+                createComparisonChart(players);
+            });
+        });
+    </script>
+</body>
+</html>

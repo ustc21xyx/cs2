@@ -61,13 +61,29 @@
         <!-- Projects Section -->
         <section id="projects" class="my-20">
             <h3 class="text-3xl font-bold text-center mb-12">我的项目</h3>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
 
-                <!-- Project Card 1: DPLL-T- -->
+                <!-- Project Card 1: ucosii-riscv-security-analysis -->
+                <div class="glass-card rounded-lg p-6 flex flex-col justify-between hover:border-blue-500 transition-all duration-300">
+                    <div>
+                        <h4 class="text-xl font-bold mb-2">µC/OS-II on RISC-V 安全分析</h4>
+                        <p class="text-gray-400 mb-4">一个关于在 RISC-V 架构上移植 µC/OS-II 实时操作系统并进行安全分析的课程项目。</p>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap mb-4">
+                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-red-600 mr-2 mb-2">C</span>
+                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-gray-600 mr-2 mb-2">嵌入式系统</span>
+                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-gray-600 mr-2 mb-2">安全分析</span>
+                        </div>
+                        <a href="https://github.com/ustc21xyx/ucosii-riscv-security-analysis" target="_blank" class="text-blue-400 hover:underline">查看项目 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Project Card 2: DPLL-T- -->
                 <div class="glass-card rounded-lg p-6 flex flex-col justify-between hover:border-blue-500 transition-all duration-300">
                     <div>
                         <h4 class="text-xl font-bold mb-2">DPLL(T) SMT 求解器</h4>
-                        <p class="text-gray-400 mb-4">一个基于 DPLL(T) 框架的简易 SMT (Satisfiability Modulo Theories) 求解器实现，专注于等式逻辑与非解释函数 (EUF)。</p>
+                        <p class="text-gray-400 mb-4">一个基于 DPLL(T) 框架的简易 SMT 求解器实现，专注于等式逻辑与非解释函数 (EUF)。</p>
                     </div>
                     <div>
                         <div class="flex flex-wrap mb-4">
@@ -79,38 +95,37 @@
                     </div>
                 </div>
 
-                <!-- Project Card 2: shiny-hat-e62f -->
+                <!-- Project Card 3: experiment -->
                 <div class="glass-card rounded-lg p-6 flex flex-col justify-between hover:border-blue-500 transition-all duration-300">
                     <div>
-                        <h4 class="text-xl font-bold mb-2">Web 开发实践</h4>
-                        <p class="text-gray-400 mb-4">一个使用 Astro 框架构建的现代化 Web 应用，探索组件化、服务端渲染等现代前端技术。</p>
+                        <h4 class="text-xl font-bold mb-2">课程实验集合</h4>
+                        <p class="text-gray-400 mb-4">一个汇集了多个课程实验代码的仓库，涵盖人工智能、并行计算、形式化方法等多个计算机科学核心领域。</p>
                     </div>
                     <div>
                         <div class="flex flex-wrap mb-4">
-                             <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-yellow-500 mr-2 mb-2">Astro</span>
-                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-blue-500 mr-2 mb-2">JavaScript</span>
-                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-green-500 mr-2 mb-2">Web开发</span>
+                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-blue-600 mr-2 mb-2">C++</span>
+                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-green-500 mr-2 mb-2">Python</span>
+                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-gray-600 mr-2 mb-2">课程实验</span>
                         </div>
-                        <a href="https://github.com/ustc21xyx/shiny-hat-e62f" target="_blank" class="text-blue-400 hover:underline">查看项目 <i class="fas fa-arrow-right"></i></a>
+                        <a href="https://github.com/ustc21xyx/experiment" target="_blank" class="text-blue-400 hover:underline">查看项目 <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
 
-                <!-- Project Card 3: openai-grok -->
+                <!-- Project Card 4: RecFM (Fork) -->
                 <div class="glass-card rounded-lg p-6 flex flex-col justify-between hover:border-blue-500 transition-all duration-300">
                     <div>
-                        <h4 class="text-xl font-bold mb-2">AI 技术探索 (Fork)</h4>
-                        <p class="text-gray-400 mb-4">为学习和探索大型语言模型 (LLM) 而 Fork 的项目。这反映了我对前沿 AI 应用开发的持续关注和跟进。</p>
+                        <h4 class="text-xl font-bold mb-2">RecFM (Fork)</h4>
+                        <p class="text-gray-400 mb-4">Fork 自 USTCLLM 团队，一个用于开发推荐系统基础模型的综合工具和框架，以跟进前沿研究。</p>
                     </div>
                     <div>
                         <div class="flex flex-wrap mb-4">
                             <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-gray-500 mr-2 mb-2">Fork</span>
                             <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-purple-600 mr-2 mb-2">AI</span>
-                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-blue-500 mr-2 mb-2">JavaScript</span>
+                            <span class="tag text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-green-500 mr-2 mb-2">推荐系统</span>
                         </div>
-                        <a href="https://github.com/ustc21xyx/openai-grok" target="_blank" class="text-blue-400 hover:underline">查看项目 <i class="fas fa-arrow-right"></i></a>
+                        <a href="https://github.com/ustc21xyx/RecFM" target="_blank" class="text-blue-400 hover:underline">查看项目 <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -122,13 +137,13 @@
                     <i class="fab fa-cuttlefish fa-2x mr-3 text-blue-500"></i>
                     <span class="text-lg">C++</span>
                 </div>
+                 <div class="text-center p-4 m-2 glass-card rounded-lg flex items-center">
+                    <i class="fab fa-python fa-2x mr-3 text-yellow-400"></i>
+                    <span class="text-lg">Python</span>
+                </div>
                 <div class="text-center p-4 m-2 glass-card rounded-lg flex items-center">
                     <i class="fab fa-js-square fa-2x mr-3 text-yellow-400"></i>
                     <span class="text-lg">JavaScript</span>
-                </div>
-                 <div class="text-center p-4 m-2 glass-card rounded-lg flex items-center">
-                    <i class="fas fa-rocket fa-2x mr-3 text-orange-500"></i>
-                    <span class="text-lg">Astro</span>
                 </div>
                 <div class="text-center p-4 m-2 glass-card rounded-lg flex items-center">
                     <i class="fas fa-robot fa-2x mr-3 text-green-400"></i>
